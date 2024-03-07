@@ -6,6 +6,7 @@ attributes and methods for the project's classes
 """
 
 
+from datetime import datetime
 from uuid import uuid4
 
 
@@ -17,8 +18,13 @@ class BaseModel:
     """
 
     def __init__(self):
+        self.__created_at = datetime.now()
         self.__id = str(uuid4())
 
     @property
     def id(self):
         return self.__id
+
+    @property
+    def created_at(self):
+        return self.__created_at
