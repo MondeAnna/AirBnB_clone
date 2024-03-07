@@ -1,0 +1,15 @@
+# everything
+* 
+
+# exceotions: files
+!.gitignore
+!*.md
+!*.png
+!*.py
+!AUTHORS
+
+# exceotions: directories
+!img
+!models
+!tests
+!tests/test_models
