@@ -7,6 +7,7 @@ Test suite for the base_model module
 from datetime import datetime
 from unittest import TestCase
 from unittest import main
+from unittest import skip
 
 
 from models import BaseModel
@@ -41,7 +42,7 @@ class TestBaseModelId(TestBaseModel):
         self.assertNotEqual(id_00, id_01)
 
     def test_id_is_quasiimmutable(self):
-        """Assert id cannot be unchangeable after instantiation"""
+        """Assert id immutable"""
 
         with self.assertRaises(AttributeError) as error:
             self.model_01.id = "new id"
@@ -70,7 +71,7 @@ class TestBaseModelCreatedAt(TestBaseModel):
         self.assertNotEqual(created_at_00, created_at_01)
 
     def test_created_at_is_quasi_immutable(self):
-        """Assert `created_at` unchangeable after instantiation"""
+        """Assert `created_at` immutable"""
 
         with self.assertRaises(AttributeError) as error:
             self.model_00.created_at = datetime.now()
@@ -79,6 +80,39 @@ class TestBaseModelCreatedAt(TestBaseModel):
         exception = str(error.exception)
 
         self.assertEqual(exception, expected)
+
+
+class TestBaseModelCreatedAt(TestBaseModel):
+
+    """Collective testing of `updated_at` attribute"""
+
+    def test_updated_at_is_datetime(self):
+        """Assert `updated_at` is datetime object"""
+
+        is_datetime = isinstance(self.model_00.updated_at, datetime)
+        self.assertTrue(is_datetime)
+
+    def test_updated_at_is_publicly_immutable(self):
+        """Assert `updated_at` publicly immutable"""
+
+        with self.assertRaises(AttributeError) as error:
+            self.model_00.updated_at = datetime.now()
+
+        expected = "property 'updated_at' of 'BaseModel' object has no setter"
+        exception = str(error.exception)
+
+        self.assertEqual(exception, expected)
+
+    @skip
+    def test_updated_at_altered_by_augmenting_object(self):
+        """Assert change to object affects `updated_at`"""
+
+        original = self.model_00.updated_at
+        self.model_01.change = 5
+        original
+        updated = self.model_00.updated_at
+
+        self.assertNotEqual(original, updated)
 
 
 if __name__ == "__main__":
