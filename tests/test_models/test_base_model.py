@@ -118,5 +118,17 @@ class TestBaseModelCreatedAt(TestBaseModel):
         self.assertNotEqual(original, updated)
 
 
+class TestBaseModelSaveMethod(TestBaseModel):
+
+    """Collective testing of `save` method"""
+
+    def test_calling_save_alters_updated_at_attr(self):
+        original = self.model_00.updated_at
+        self.model_00.save()
+        updated = self.model_00.updated_at
+
+        self.assertNotEqual(original, updated)
+
+
 if __name__ == "__main__":
     main()

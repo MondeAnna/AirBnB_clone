@@ -20,3 +20,6 @@ class BaseModel:
     def __init__(self):
         self.created_at = self.updated_at = datetime.now()
         self.id = str(uuid4())
+
+    def save(self):
+        self.updated_at = datetime.now()
