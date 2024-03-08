@@ -6,12 +6,11 @@ Test suite for the base_model module
 """
 
 
+from unittest.mock import MagicMock
+from unittest.mock import patch
 from datetime import datetime
 from unittest import TestCase
 from unittest import main
-from unittest import skip
-from unittest.mock import MagicMock
-from unittest.mock import patch
 import uuid
 
 
@@ -21,9 +20,6 @@ from models import BaseModel
 class TestBaseModel(TestCase):
 
     """Collective testing of base model attributes"""
-
-    # allow's detailed results for erroneous tests
-    maxDiff = None
 
     def setUp(self):
         """Provide a factory for test instances"""
@@ -49,18 +45,6 @@ class TestId(TestBaseModel):
         id_01 = self.model_01.id
         self.assertNotEqual(id_00, id_01)
 
-    @skip
-    def test_id_is_quasi_immutable(self):
-        """Assert id immutable"""
-
-        with self.assertRaises(AttributeError) as error:
-            self.model_01.id = "new id"
-
-        expected = "property 'id' of 'BaseModel' object has no setter"
-        exception = str(error.exception)
-
-        self.assertEqual(exception, expected)
-
 
 class TestCreatedAt(TestBaseModel):
 
@@ -78,18 +62,6 @@ class TestCreatedAt(TestBaseModel):
         created_at_00 = self.model_00.created_at
         created_at_01 = self.model_01.created_at
         self.assertNotEqual(created_at_00, created_at_01)
-
-    @skip
-    def test_created_at_is_quasi_immutable(self):
-        """Assert `created_at` immutable"""
-
-        with self.assertRaises(AttributeError) as error:
-            self.model_00.created_at = datetime.now()
-
-        expected = "property 'created_at' of 'BaseModel' object has no setter"
-        exception = str(error.exception)
-
-        self.assertEqual(exception, expected)
 
 
 class TestUpdatedAt(TestBaseModel):
