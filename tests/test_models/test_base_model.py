@@ -22,6 +22,9 @@ class TestBaseModel(TestCase):
 
     """Collective testing of base model attributes"""
 
+    # allow's detailed results for erroneous tests
+    maxDiff = None
+
     def setUp(self):
         """Provide a factory for test instances"""
 
@@ -162,16 +165,27 @@ class TestBaseModelStrProperty(TestBaseModel):
 
     """Collective testing of `__str__` property"""
 
-    @skip
-    @patch("datetime.datetime.now", return_value="now")
-    @patch("uuid.uudi4", return_value="returned uuid value")
-    def test_str_property(self, mock_uuid4, mock_now):
-        dict_ = " ".join([
-            "{'updated_at': 'now',"
-            "'id': 'returned uuid value',"
-            "'created_at': 'now'}"
-        ])
-        expected = f"[BaseModel] (returned uuid value) {dict_}"
+    @patch("models.base_model.uuid", wraps=uuid)
+    @patch("models.base_model.datetime", wraps=datetime)
+    def test_str_property(self, mock_dt, mock_uuid):
+        now = datetime.now()
+        mock_dt.now = MagicMock(return_value=now)
+
+        mock_id = "unique mocked id"
+        mock_uuid.uuid4.return_value = mock_id
+
+        model = BaseModel()
+
+        dict_ = {
+            "created_at": now,
+            "id": mock_id,
+            "updated_at": now,
+        }
+
+        expected = f"[BaseModel] ({mock_id}) {dict_}"
+        actual = str(model)
+
+        self.assertEqual(actual, expected)
 
 
 if __name__ == "__main__":

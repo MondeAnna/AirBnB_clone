@@ -36,10 +36,19 @@ class BaseModel:
         dict_ = {
             key.replace("_BaseModel__", ""): value.isoformat()
             if not isinstance(value, str) else value
-            for key, value in self.__dict__.items()
+            for key, value in sorted(self.__dict__.items())
         }
 
         return {
             "__class__": self.__class__.__name__,
             **dict_,
         }
+
+    def __str__(self):
+        dict_ = {
+            key.replace("_BaseModel__", ""): value
+            for key, value in sorted(self.__dict__.items())
+        }
+
+        name = self.__class__.__name__
+        return f"[{name}] ({self.id}) {dict_}"
