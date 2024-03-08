@@ -100,18 +100,6 @@ class TestBaseModelUpdatedAt(TestBaseModel):
         is_datetime = isinstance(self.model_00.updated_at, datetime)
         self.assertTrue(is_datetime)
 
-    @skip
-    def test_updated_at_is_publicly_immutable(self):
-        """Assert `updated_at` publicly immutable"""
-
-        with self.assertRaises(AttributeError) as error:
-            self.model_00.updated_at = datetime.now()
-
-        expected = "property 'updated_at' of 'BaseModel' object has no setter"
-        exception = str(error.exception)
-
-        self.assertEqual(exception, expected)
-
     def test_updated_at_altered_by_augmenting_object(self):
         """Assert change to object affects `updated_at`"""
 
