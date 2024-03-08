@@ -1,13 +1,18 @@
 #!/usr/bin/python3
 
+
 """
 Test suite for the base_model module
 """
+
 
 from datetime import datetime
 from unittest import TestCase
 from unittest import main
 from unittest import skip
+from unittest.mock import MagicMock
+from unittest.mock import patch
+import uuid
 
 
 from models import BaseModel
@@ -126,6 +131,47 @@ class TestBaseModelSaveMethod(TestBaseModel):
         updated = self.model_00.updated_at
 
         self.assertNotEqual(original, updated)
+
+
+class TestBaseModelToDict(TestBaseModel):
+
+    """Collective testing of `to_dict` method"""
+
+    @patch("models.base_model.uuid", wraps=uuid)
+    @patch("models.base_model.datetime", wraps=datetime)
+    def test_to_dict(self, mock_dt, mock_uuid):
+        now = datetime.now()
+        mock_dt.now = MagicMock(return_value=now)
+        now_str = now.isoformat()
+
+        mock_uuid.uuid4.return_value = "unique id"
+
+        model = BaseModel()
+
+        expected = {
+            "__class__": "BaseModel",
+            "created_at": now_str,
+            "id": "unique id",
+            "updated_at": now_str,
+        }
+
+        self.assertEqual(model.to_dict(), expected)
+
+
+class TestBaseModelStrProperty(TestBaseModel):
+
+    """Collective testing of `__str__` property"""
+
+    @skip
+    @patch("datetime.datetime.now", return_value="now")
+    @patch("uuid.uudi4", return_value="returned uuid value")
+    def test_str_property(self, mock_uuid4, mock_now):
+        dict_ = " ".join([
+            "{'updated_at': 'now',"
+            "'id': 'returned uuid value',"
+            "'created_at': 'now'}"
+        ])
+        expected = f"[BaseModel] (returned uuid value) {dict_}"
 
 
 if __name__ == "__main__":

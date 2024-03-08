@@ -7,7 +7,7 @@ attributes and methods for the project's classes
 
 
 from datetime import datetime
-from uuid import uuid4
+import uuid
 
 
 class BaseModel:
@@ -19,7 +19,7 @@ class BaseModel:
 
     def __init__(self):
         self.__created_at = self.updated_at = datetime.now()
-        self.__id = str(uuid4())
+        self.__id = str(uuid.uuid4())
 
     @property
     def id(self):
@@ -31,3 +31,15 @@ class BaseModel:
 
     def save(self):
         self.updated_at = datetime.now()
+
+    def to_dict(self):
+        dict_ = {
+            key.replace("_BaseModel__", ""): value.isoformat()
+            if not isinstance(value, str) else value
+            for key, value in self.__dict__.items()
+        }
+
+        return {
+            "__class__": self.__class__.__name__,
+            **dict_,
+        }
