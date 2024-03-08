@@ -17,17 +17,11 @@ class BaseModel:
     attributes and methods for the project's classes
     """
 
-    def __init__(self):
-        self.__id = str(uuid.uuid4())
-        self.__created_at = self.updated_at = datetime.now()
-
-    @property
-    def id(self):
-        return self.__id
-
-    @property
-    def created_at(self):
-        return self.__created_at
+    def __init__(self, *args, **kwargs):
+        if not kwargs:
+            self.__init_default()
+        else:
+            self.__init_kwargs(kwargs)
 
     def save(self):
         self.updated_at = datetime.now()
@@ -44,6 +38,20 @@ class BaseModel:
             **dict_,
         }
 
+    def __init_default(self):
+        self.id = str(uuid.uuid4())
+        self.created_at = self.updated_at = datetime.now()
+
+    def __init_kwargs(self, kwargs):
+        dt_attr = ["created_at", "updated_at"]
+
+        for attr, value in kwargs.items():
+            if attr in dt_attr:
+                format = "%Y-%m-%dT%H:%M:%S.%f"
+                value = datetime.strptime(value, format)
+
+            self.__dict__[attr] = value
+
     def __setattr__(self, name, value):
         if name.count("updated_at"):
             return super().__setattr__(name, value)
@@ -52,7 +60,7 @@ class BaseModel:
 
     def __str__(self):
         dict_ = {
-            key.replace("_BaseModel__", ""): value
+            key: value
             for key, value in sorted(self.__dict__.items())
         }
 
