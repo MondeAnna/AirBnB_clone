@@ -32,7 +32,7 @@ class TestBaseModel(TestCase):
         self.model_01 = BaseModel()
 
 
-class TestBaseModelId(TestBaseModel):
+class TestId(TestBaseModel):
 
     """Collective testing of `id` attribute"""
 
@@ -61,7 +61,7 @@ class TestBaseModelId(TestBaseModel):
         self.assertEqual(exception, expected)
 
 
-class TestBaseModelCreatedAt(TestBaseModel):
+class TestCreatedAt(TestBaseModel):
 
     """Collective testing of `created_at` attribute"""
 
@@ -90,7 +90,7 @@ class TestBaseModelCreatedAt(TestBaseModel):
         self.assertEqual(exception, expected)
 
 
-class TestBaseModelUpdatedAt(TestBaseModel):
+class TestUpdatedAt(TestBaseModel):
 
     """Collective testing of `updated_at` attribute"""
 
@@ -110,7 +110,7 @@ class TestBaseModelUpdatedAt(TestBaseModel):
         self.assertNotEqual(original_datetime, updated_datetime)
 
 
-class TestBaseModelSaveMethod(TestBaseModel):
+class TestSaveMethod(TestBaseModel):
 
     """Collective testing of `save` method"""
 
@@ -122,7 +122,7 @@ class TestBaseModelSaveMethod(TestBaseModel):
         self.assertNotEqual(original, updated)
 
 
-class TestBaseModelToDict(TestBaseModel):
+class TestToDict(TestBaseModel):
 
     """Collective testing of `to_dict` method"""
 
@@ -147,7 +147,7 @@ class TestBaseModelToDict(TestBaseModel):
         self.assertEqual(model.to_dict(), expected)
 
 
-class TestBaseModelStrProperty(TestBaseModel):
+class TestStrProperty(TestBaseModel):
 
     """Collective testing of `__str__` property"""
 
