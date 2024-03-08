@@ -18,8 +18,16 @@ class BaseModel:
     """
 
     def __init__(self):
-        self.created_at = self.updated_at = datetime.now()
-        self.id = str(uuid4())
+        self.__created_at = self.updated_at = datetime.now()
+        self.__id = str(uuid4())
+
+    @property
+    def id(self):
+        return self.__id
+
+    @property
+    def created_at(self):
+        return self.__created_at
 
     def save(self):
         self.updated_at = datetime.now()

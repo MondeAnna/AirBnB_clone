@@ -41,7 +41,6 @@ class TestBaseModelId(TestBaseModel):
         id_01 = self.model_01.id
         self.assertNotEqual(id_00, id_01)
 
-    @skip
     def test_id_is_quasi_immutable(self):
         """Assert id immutable"""
 
@@ -71,7 +70,6 @@ class TestBaseModelCreatedAt(TestBaseModel):
         created_at_01 = self.model_01.created_at
         self.assertNotEqual(created_at_00, created_at_01)
 
-    @skip
     def test_created_at_is_quasi_immutable(self):
         """Assert `created_at` immutable"""
 
@@ -84,7 +82,7 @@ class TestBaseModelCreatedAt(TestBaseModel):
         self.assertEqual(exception, expected)
 
 
-class TestBaseModelCreatedAt(TestBaseModel):
+class TestBaseModelUpdatedAt(TestBaseModel):
 
     """Collective testing of `updated_at` attribute"""
 
