@@ -112,16 +112,14 @@ class TestBaseModelUpdatedAt(TestBaseModel):
 
         self.assertEqual(exception, expected)
 
-    @skip
     def test_updated_at_altered_by_augmenting_object(self):
         """Assert change to object affects `updated_at`"""
 
-        original = self.model_00.updated_at
+        original_datetime = self.model_01.updated_at
         self.model_01.change = 5
-        original
-        updated = self.model_00.updated_at
+        updated_datetime = self.model_01.updated_at
 
-        self.assertNotEqual(original, updated)
+        self.assertNotEqual(original_datetime, updated_datetime)
 
 
 class TestBaseModelSaveMethod(TestBaseModel):
@@ -144,7 +142,7 @@ class TestBaseModelToDict(TestBaseModel):
     @patch("models.base_model.datetime", wraps=datetime)
     def test_to_dict(self, mock_dt, mock_uuid):
         now = datetime.now()
-        mock_dt.now = MagicMock(return_value=now)
+        mock_dt.now.return_value = now
         now_str = now.isoformat()
 
         mock_uuid.uuid4.return_value = "unique id"

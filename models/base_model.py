@@ -18,8 +18,8 @@ class BaseModel:
     """
 
     def __init__(self):
-        self.__created_at = self.updated_at = datetime.now()
         self.__id = str(uuid.uuid4())
+        self.__created_at = self.updated_at = datetime.now()
 
     @property
     def id(self):
@@ -43,6 +43,12 @@ class BaseModel:
             "__class__": self.__class__.__name__,
             **dict_,
         }
+
+    def __setattr__(self, name, value):
+        if name.count("updated_at"):
+            return super().__setattr__(name, value)
+        self.__dict__["updated_at"] = datetime.now()
+        super().__setattr__(name, value)
 
     def __str__(self):
         dict_ = {
