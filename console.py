@@ -64,6 +64,11 @@ class HBNBCommand(cmd.Cmd):
         print()
         return True
 
+    def do_exit(self, line):
+        """Exit command to quit the program"""
+
+        return True
+
     def do_show(self, line):
         """
         Prints the string representation of an instance
