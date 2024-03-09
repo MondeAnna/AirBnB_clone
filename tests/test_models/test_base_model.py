@@ -103,6 +103,8 @@ class TestToDict(TestBaseModel):
     @patch("models.base_model.uuid", wraps=uuid)
     @patch("models.base_model.datetime", wraps=datetime)
     def test_to_dict(self, mock_dt, mock_uuid):
+        """Assert deserialisation of an unaltered instance"""
+
         now = datetime.now()
         mock_dt.now.return_value = now
         now_str = now.isoformat()
@@ -128,6 +130,8 @@ class TestStrProperty(TestBaseModel):
     @patch("models.base_model.uuid", wraps=uuid)
     @patch("models.base_model.datetime", wraps=datetime)
     def test_str_property(self, mock_dt, mock_uuid):
+        """Assert string representation of an unaltered instance"""
+
         now = datetime.now()
         mock_dt.now = MagicMock(return_value=now)
 
@@ -161,6 +165,8 @@ class TestKwargInstantiation(TestBaseModel):
     }
 
     def test_properties_of_newly_created_instance(self):
+        """Assert spawing of an instance"""
+
         model = BaseModel(**self.kwargs)
 
         expected_created_at = datetime(2017, 9, 28, 21, 3, 54, 52298)
