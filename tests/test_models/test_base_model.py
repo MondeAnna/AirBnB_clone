@@ -35,8 +35,8 @@ class TestId(TestBaseModel):
     def test_id_is_str(self):
         """Assert id is str type"""
 
-        is_str = isinstance(self.model_00.id, str)
-        self.assertTrue(is_str)
+        id_ = self.model_00.id
+        self.assertIsInstance(id_, str)
 
     def test_id_is_unique(self):
         """Assert id is unique to each instance"""
@@ -53,8 +53,8 @@ class TestCreatedAt(TestBaseModel):
     def test_created_at_is_datetime(self):
         """Assert `created_at` is datetime object"""
 
-        is_datetime = isinstance(self.model_01.created_at, datetime)
-        self.assertTrue(is_datetime)
+        created_at = self.model_01.created_at
+        self.assertIsInstance(created_at, datetime)
 
     def test_created_at_is_unique(self):
         """Assert `created_at` is unique to each instance"""
@@ -71,8 +71,8 @@ class TestUpdatedAt(TestBaseModel):
     def test_updated_at_is_datetime(self):
         """Assert `updated_at` is datetime object"""
 
-        is_datetime = isinstance(self.model_00.updated_at, datetime)
-        self.assertTrue(is_datetime)
+        updated_at = self.model_00.updated_at
+        self.assertIsInstance(updated_at, datetime)
 
     def test_updated_at_altered_by_augmenting_object(self):
         """Assert change to object affects `updated_at`"""
