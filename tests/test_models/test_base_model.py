@@ -134,15 +134,34 @@ class TestStrProperty(TestMockedInit):
     def test_str_property(self):
         """Assert string representation of an unaltered instance"""
 
-        mock_id = "unique id"
-
         dict_ = {
             "created_at": self.init_time,
-            "id": mock_id,
+            "id": "unique id",
             "updated_at": self.init_time,
         }
 
-        expected = f"[BaseModel] ({mock_id}) {dict_}"
+        expected = f"[BaseModel] (unique id) {dict_}"
+        actual = str(self.model)
+
+        self.assertEqual(actual, expected)
+
+    @patch("models.base_model.datetime", wraps=datetime)
+    def test_str_property_with_added_attr(self, mock_dt):
+        """Assert string representation of an altered instance"""
+
+        now = datetime.now()
+        mock_dt.now.return_value = now
+
+        self.model.new_attr = "new attribute"
+
+        dict_ = {
+            "created_at": self.init_time,
+            "id": "unique id",
+            "new_attr": "new attribute",
+            "updated_at": now,
+        }
+
+        expected = f"[BaseModel] (unique id) {dict_}"
         actual = str(self.model)
 
         self.assertEqual(actual, expected)
