@@ -10,6 +10,7 @@ from unittest.mock import MagicMock
 from unittest.mock import patch
 from unittest import TestCase
 from unittest import main
+from pathlib import Path
 
 
 from models import FileStorage
@@ -176,16 +177,22 @@ class TestReload(TestFileStorage):
 
     @patch("json.load")
     @patch("builtins.open")
-    @patch("pathlib.Path.is_file", return_value=True)
+    @patch("models.engine.file_storage.Path", wraps=Path)
     def test_reload_when_empty_file_exits(
         self,
         mock_path,
         mock_open,
-        mock_json_load
+        mock_load
     ):
         """Assert object tracking reset to empty if empty file exists"""
 
-        mock_json_load.return_value = {}
+        is_file = mock_path.return_value.is_file
+        is_file.return_value = True
+
+        st_size = mock_path.return_value.stat.return_value.st_size
+        st_size = 0
+
+        mock_load.return_value = {}
 
         pre_call = self.storage.all()
         self.storage.reload()
@@ -193,31 +200,40 @@ class TestReload(TestFileStorage):
 
         self.assertNotEqual(pre_call, post_call)
         self.assertEqual(post_call, {})
-        mock_path.assert_called_once()
+
+        is_file.assert_called_once()
         mock_open.assert_called_once()
-        mock_json_load.assert_called_once()
+        mock_load.assert_called_once()
 
     @patch("json.load")
     @patch("builtins.open")
-    @patch("pathlib.Path.is_file", return_value=True)
+    @patch("models.engine.file_storage.Path", wraps=Path)
     def test_reload_when_file_exits(
         self,
         mock_path,
         mock_open,
-        mock_json_load
+        mock_load
     ):
         """Assert reload alters tracked objects when file present"""
 
-        mock_json_load.return_value = self.mock_json_load_side_effect
+        is_file = mock_path.return_value.is_file
+        is_file.return_value = True
+
+        st_size = mock_path.return_value.stat.return_value.st_size
+        st_size = 1
+
+        mock_load.return_value = self.mock_json_load_side_effect
 
         pre_call = self.storage.all()
         self.storage.reload()
         post_call = self.storage.all()
 
+        self.assertEqual(post_call, self.mock_json_load_side_effect)
         self.assertNotEqual(pre_call, post_call)
-        mock_path.assert_called_once()
+
+        is_file.assert_called_once()
         mock_open.assert_called_once()
-        mock_json_load.assert_called_once()
+        mock_load.assert_called_once()
 
 
 if __name__ == "__main__":

@@ -51,8 +51,10 @@ class FileStorage:
 
         if not Path(self.__file_path).is_file():
             return
+
         elif not Path(self.__file_path).stat().st_size:
             self.__objects = {}
+
         else:
             with open(self.__file_path, "r") as file:
                 self.__objects = json.load(file)
