@@ -6,11 +6,12 @@ attributes and methods for the project's classes
 """
 
 
+from importlib import import_module
 from datetime import datetime
 import uuid
 
 
-from models import storage
+models = import_module("models")
 
 
 class BaseModel:
@@ -43,7 +44,7 @@ class BaseModel:
         """Update the `updated_at` attribute"""
 
         self.updated_at = datetime.now()
-        storage.save()
+        models.storage.save()
 
     def to_dict(self):
         """Serialises BaseModel's attributes into a `dict`"""
@@ -64,7 +65,7 @@ class BaseModel:
 
         self.id = str(uuid.uuid4())
         self.created_at = self.updated_at = datetime.now()
-        storage.new(self)
+        models.storage.new(self)
 
     def __init_kwargs(self, kwargs):
         """
