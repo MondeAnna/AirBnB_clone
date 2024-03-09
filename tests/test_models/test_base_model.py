@@ -96,63 +96,59 @@ class TestSaveMethod(TestBaseModel):
         self.assertNotEqual(original, updated)
 
 
-class TestToDict(TestBaseModel):
+class TestMockedInit(TestCase):
+
+    @patch("models.base_model.uuid", wraps=uuid)
+    @patch("models.base_model.datetime", wraps=datetime)
+    def setUp(self, mock_dt, mock_uuid):
+        mock_uuid.uuid4.return_value = "unique id"
+
+        self.init_time = datetime.now()
+        mock_dt.now.return_value = self.init_time
+        self.init_time_str = self.init_time.isoformat()
+
+        self.model = BaseModel()
+
+
+class TestToDict(TestMockedInit):
 
     """Collective testing of `to_dict` method"""
 
-    @patch("models.base_model.uuid", wraps=uuid)
-    @patch("models.base_model.datetime", wraps=datetime)
-    def test_to_dict(self, mock_dt, mock_uuid):
+    def test_to_dict(self):
         """Assert deserialisation of an unaltered instance"""
-
-        now = datetime.now()
-        mock_dt.now.return_value = now
-        now_str = now.isoformat()
-
-        mock_uuid.uuid4.return_value = "unique id"
-
-        model = BaseModel()
 
         expected = {
             "__class__": "BaseModel",
-            "created_at": now_str,
+            "created_at": self.init_time_str,
             "id": "unique id",
-            "updated_at": now_str,
+            "updated_at": self.init_time_str,
         }
 
-        self.assertEqual(model.to_dict(), expected)
+        self.assertEqual(self.model.to_dict(), expected)
 
 
-class TestStrProperty(TestBaseModel):
+class TestStrProperty(TestMockedInit):
 
     """Collective testing of `__str__` property"""
 
-    @patch("models.base_model.uuid", wraps=uuid)
-    @patch("models.base_model.datetime", wraps=datetime)
-    def test_str_property(self, mock_dt, mock_uuid):
+    def test_str_property(self):
         """Assert string representation of an unaltered instance"""
 
-        now = datetime.now()
-        mock_dt.now = MagicMock(return_value=now)
-
-        mock_id = "unique mocked id"
-        mock_uuid.uuid4.return_value = mock_id
-
-        model = BaseModel()
+        mock_id = "unique id"
 
         dict_ = {
-            "created_at": now,
+            "created_at": self.init_time,
             "id": mock_id,
-            "updated_at": now,
+            "updated_at": self.init_time,
         }
 
         expected = f"[BaseModel] ({mock_id}) {dict_}"
-        actual = str(model)
+        actual = str(self.model)
 
         self.assertEqual(actual, expected)
 
 
-class TestKwargInstantiation(TestBaseModel):
+class TestKwargInstantiation(TestCase):
 
     """Collective testing of `__init__` property"""
 
