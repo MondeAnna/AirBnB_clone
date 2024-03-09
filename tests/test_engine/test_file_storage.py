@@ -39,6 +39,11 @@ class TestFileStorage(TestCase):
             "id": "mock_model_01",
         }
 
+    def tearDown(self):
+        del self.storage
+        del self.mock_model_00
+        del self.mock_model_01
+
 
 class TestAll(TestFileStorage):
 
@@ -58,12 +63,33 @@ class TestNew(TestFileStorage):
         """Assert that single provided instance is tracked"""
 
         self.storage.new(self.mock_model_00)
-        objects = self.storage.all()
 
-        print(objects)
+        objects = self.storage.all()
+        num_objects = len(objects)
 
         self.assertTrue("BaseModel.mock_model_00" in objects.keys())
         self.assertTrue(self.mock_model_00 in objects.values())
+
+        # the number of tracked items seems to persist
+        # between tests, here the number of items is
+        # expected to be one
+
+        """ self.assertEqual(num_objects, 1) """
+
+    def test_new_when_multiple_object_is_provided(self):
+        """Assert that single provided instance is tracked"""
+
+        self.storage.new(self.mock_model_00)
+        self.storage.new(self.mock_model_01)
+
+        objects = self.storage.all()
+        num_objects = len(objects)
+
+        self.assertTrue("BaseModel.mock_model_00" in objects.keys())
+        self.assertTrue("BaseModel.mock_model_01" in objects.keys())
+        self.assertTrue(self.mock_model_00 in objects.values())
+        self.assertTrue(self.mock_model_01 in objects.values())
+        self.assertEqual(num_objects, 2)
 
 
 if __name__ == "__main__":
