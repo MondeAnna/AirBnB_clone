@@ -28,8 +28,8 @@ class HBNBCommand(cmd.Cmd):
     def do_create(self, class_name):
         """
         Creates a new instance, saves it and prints the id. If
-        the class name is missing, informs the user and if the
-        class name does not exist, informs the user.
+        the class name is missing or does not exist, the user
+        is informed
 
         Parameter
         ---------
