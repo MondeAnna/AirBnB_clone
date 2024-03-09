@@ -43,14 +43,13 @@ class FileStorage:
         """
 
         key = self.__extract_key(obj)
-        self.__objects[key] = obj
+        self.__objects[key] = obj.to_dict()
 
     def save(self):
         """Serialises tracked objects"""
 
-        with open(self.__file_path) as file:
-            objects = json.dump(self.__objects)
-            file.write(objects)
+        with open(self.__file_path, "w") as file:
+            json.dump(self.__objects, file)
 
     @staticmethod
     def __extract_key(obj):
