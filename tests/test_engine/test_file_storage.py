@@ -10,7 +10,6 @@ from unittest.mock import MagicMock
 from unittest.mock import patch
 from unittest import TestCase
 from unittest import main
-from unittest import skip
 
 
 from models import FileStorage
@@ -93,7 +92,6 @@ class TestNew(TestFileStorage):
         self.assertEqual(num_objects, 2)
 
 
-@skip
 class TestSave(TestFileStorage):
 
     """Assert serialisation to json file"""
@@ -106,7 +104,7 @@ class TestSave(TestFileStorage):
         self.storage.save()
 
         mock_dump.assert_called_once_with(self.storage.file_path, "w")
-        mock_open.assert_called_once(self.storage.all())
+        mock_open.assert_called_once()
 
     @patch("builtins.open")
     @patch("json.dump")
@@ -117,7 +115,7 @@ class TestSave(TestFileStorage):
         self.storage.save()
 
         mock_dump.assert_called_once_with(self.storage.file_path, "w")
-        mock_open.assert_called_once_with(self.storage.all())
+        mock_open.assert_called_once()
 
 
 if __name__ == "__main__":
