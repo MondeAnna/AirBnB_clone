@@ -25,6 +25,51 @@ class HBNBCommand(cmd.Cmd):
 
         pass
 
+    def do_all(self, class_name):
+        """
+        Prints a list of string representations of all instances.
+        Where class name is provided, instances are scoped to said
+        class. Where no class name is provided, all instance
+        representations are printed.
+
+        Parameter
+        ---------
+        class_name : str
+            name of class to be represented
+
+        Expected
+        --------
+            (hbnb) all
+            (hbnb) all BaseModel
+
+        Non-Existant Class
+        ------------------
+            (hbnb) all DoesNotExist
+            ** class doesn't exist **
+        """
+
+        if class_name and class_name not in self.__valid_models:
+            print("** class doesn't exist **")
+            return
+
+        if not class_name:
+            instances = list(storage.all().values())
+        else:
+            instances = [
+                instance
+                for instance in storage.all().values()
+                if instance.get("__class__") == class_name
+            ]
+
+        for instance in instances:
+            model = BaseModel({
+                key: value
+                for key, value in instance.items()
+                if not key.count("__class__")
+            })
+
+            print(model)
+
     def do_create(self, class_name):
         """
         Creates a new instance, saves it and prints the id. If
