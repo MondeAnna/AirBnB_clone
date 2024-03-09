@@ -7,6 +7,7 @@ attributes and methods for storing BaseModel instances to the file system
 
 
 from datetime import datetime
+import json
 import uuid
 
 
@@ -18,13 +19,17 @@ class FileStorage:
     file system
     """
 
-    __file_path = ""
+    __file_path = "file.json"
     __objects = {}
 
     def all(self):
         """Provides all the saved BaseModel objects"""
 
         return self.__objects
+
+    @property
+    def file_path(self):
+        return self.__file_path
 
     def new(self, obj):
         """
@@ -39,6 +44,13 @@ class FileStorage:
 
         key = self.__extract_key(obj)
         self.__objects[key] = obj
+
+    def save(self):
+        """Serialises tracked objects"""
+
+        with open(self.__file_path) as file:
+            objects = json.dump(self.__objects)
+            file.write(objects)
 
     @staticmethod
     def __extract_key(obj):

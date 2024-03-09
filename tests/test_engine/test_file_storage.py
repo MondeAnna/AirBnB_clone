@@ -92,5 +92,33 @@ class TestNew(TestFileStorage):
         self.assertEqual(num_objects, 2)
 
 
+class TestSave(TestFileStorage):
+
+    """Assert serialisation to json file"""
+
+    @patch("builtins.open")
+    @patch("json.dump")
+    def test_save_with_no_tracked_objects(self, mock_open, mock_dump):
+        """Assert save renders to file with no tracked objects"""
+
+        self.storage.save()
+        file_path = self.storage.file_path
+
+        mock_open.assert_called_once()
+        mock_dump.assert_called_once_with(file_path)
+
+    @patch("builtins.open")
+    @patch("json.dump")
+    def test_save_with_tracked_objects(self, mock_open, mock_dump):
+        """Assert save renders to file with no tracked objects"""
+
+        self.storage.new(self.mock_model_00)
+        self.storage.save()
+        file_path = self.storage.file_path
+
+        mock_open.assert_called_once()
+        mock_dump.assert_called_once_with(file_path)
+
+
 if __name__ == "__main__":
     main()
