@@ -53,21 +53,16 @@ class HBNBCommand(cmd.Cmd):
             return
 
         if not class_name:
-            instances = list(storage.all().values())
+            kwargs_list = list(storage.all().values())
         else:
-            instances = [
+            kwargs_list = [
                 instance
                 for instance in storage.all().values()
                 if instance.get("__class__") == class_name
             ]
 
-        for instance in instances:
-            model = BaseModel({
-                key: value
-                for key, value in instance.items()
-                if not key.count("__class__")
-            })
-
+        for kwargs in kwargs_list:
+            model = self.__make_model(kwargs)
             print(model)
 
     def do_create(self, class_name):
@@ -210,7 +205,8 @@ class HBNBCommand(cmd.Cmd):
             return
 
         key = f"{class_name}.{instance_id}"
-        model = storage.all().get(key)
+        kwargs = storage.all().get(key)
+        model = self.__make_model(kwargs)
         print(model)
 
     def do_quit(self, line):
@@ -246,6 +242,14 @@ class HBNBCommand(cmd.Cmd):
             return False
 
         return True
+
+    @staticmethod
+    def __make_model(kwargs):
+        return BaseModel({
+            key: value
+            for key, value in kwargs.items()
+            if not key.count("__class__")
+        })
 
     @staticmethod
     def __split_line(line):
