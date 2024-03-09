@@ -115,13 +115,33 @@ class TestToDict(TestMockedInit):
     """Collective testing of `to_dict` method"""
 
     def test_to_dict(self):
-        """Assert deserialisation of an unaltered instance"""
+        """Assert serialisation of an unaltered instance"""
 
         expected = {
             "__class__": "BaseModel",
             "created_at": self.init_time_str,
             "id": "unique id",
             "updated_at": self.init_time_str,
+        }
+
+        self.assertEqual(self.model.to_dict(), expected)
+
+    @patch("models.base_model.datetime", wraps=datetime)
+    def test_to_dict_with_added_attr(self, mock_dt):
+        """Assert serialisation of an altered instance"""
+
+        now = datetime.now()
+        mock_dt.now.return_value = now
+        now_str = now.isoformat()
+
+        self.model.new_attr = "new attribute"
+
+        expected = {
+            "__class__": "BaseModel",
+            "created_at": self.init_time_str,
+            "id": "unique id",
+            "new_attr": "new attribute",
+            "updated_at": now_str,
         }
 
         self.assertEqual(self.model.to_dict(), expected)
