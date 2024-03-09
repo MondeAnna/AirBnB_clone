@@ -66,4 +66,5 @@ class FileStorage:
         dict_ = obj.to_dict()
         cls = dict_.get("__class__")
         id_ = dict_.get("id")
+
         return f"{cls}.{id_}"

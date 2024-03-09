@@ -70,11 +70,13 @@ class TestNew(TestFileStorage):
         self.assertTrue("BaseModel.mock_model_00" in objects.keys())
         self.assertTrue(self.mock_model_00.to_dict() in objects.values())
 
-        # the number of tracked items seems to persist
-        # between tests, here the number of items is
-        # expected to be one
+        """
+        self.assertEqual(num_objects, 1)
 
-        """ self.assertEqual(num_objects, 1) """
+        the number of tracked items seems to persist
+        between tests, here the number of items is
+        expected to be one
+        """
 
     def test_new_when_multiple_object_is_provided(self):
         """Assert that single provided instance is tracked"""
@@ -96,9 +98,9 @@ class TestSave(TestFileStorage):
 
     """Assert serialisation to json file"""
 
-    @patch("builtins.open")
     @patch("json.dump")
-    def test_save_with_no_tracked_objects(self, mock_open, mock_dump):
+    @patch("builtins.open")
+    def test_save_with_no_tracked_objects(self, mock_dump, mock_open):
         """Assert save renders to file with no tracked objects"""
 
         self.storage.save()
@@ -106,9 +108,9 @@ class TestSave(TestFileStorage):
         mock_dump.assert_called_once_with(self.storage.file_path, "w")
         mock_open.assert_called_once()
 
-    @patch("builtins.open")
     @patch("json.dump")
-    def test_save_with_tracked_objects(self, mock_open, mock_dump):
+    @patch("builtins.open")
+    def test_save_with_tracked_objects(self, mock_dump, mock_open):
         """Assert save renders to file with no tracked objects"""
 
         self.storage.new(self.mock_model_00)
