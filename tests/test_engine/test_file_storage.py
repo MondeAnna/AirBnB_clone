@@ -100,29 +100,38 @@ class TestSave(TestFileStorage):
 
     @patch("json.dump")
     @patch("builtins.open")
-    def test_save_with_no_tracked_objects(self, mock_dump, mock_open):
+    def test_save_with_no_tracked_objects(self, mock_json_dump, mock_open):
         """Assert save renders to file with no tracked objects"""
 
         self.storage.save()
 
-        mock_dump.assert_called_once_with(self.storage.file_path, "w")
+        mock_json_dump.assert_called_once_with(self.storage.file_path, "w")
         mock_open.assert_called_once()
 
     @patch("json.dump")
     @patch("builtins.open")
-    def test_save_with_tracked_objects(self, mock_dump, mock_open):
+    def test_save_with_tracked_objects(self, mock_json_dump, mock_open):
         """Assert save renders to file with no tracked objects"""
 
         self.storage.new(self.mock_model_00)
         self.storage.save()
 
-        mock_dump.assert_called_once_with(self.storage.file_path, "w")
+        mock_json_dump.assert_called_once_with(self.storage.file_path, "w")
         mock_open.assert_called_once()
 
 
 class TestReload(TestFileStorage):
 
     """Assert deserialisation to json file"""
+
+    mock_json_load_side_effect = {
+        "BaseModel.2ef7469a-9b12-4174-97a3-89744af13dbd": {
+            "__class__": "BaseModel",
+            "created_at": "2024-03-09T10:33:34.745168",
+            "id": "2ef7469a-9b12-4174-97a3-89744af13dbd",
+            "updated_at": "2024-03-09T10:33:34.745168",
+        }
+    }
 
     @patch("json.dump")
     @patch("builtins.open")
@@ -131,7 +140,7 @@ class TestReload(TestFileStorage):
         self,
         mock_path,
         mock_open,
-        mock_dump
+        mock_json_dump
     ):
         """Assert reload does nothing if no file to load from"""
 
@@ -142,8 +151,8 @@ class TestReload(TestFileStorage):
             self.fail("method `reload` unexpectedly raised `{name}`")
 
         mock_path.assert_called_once()
-        mock_dump.assert_not_called()
         mock_open.assert_not_called()
+        mock_json_dump.assert_not_called()
 
     @patch("json.dump")
     @patch("builtins.open")
@@ -152,7 +161,7 @@ class TestReload(TestFileStorage):
         self,
         mock_path,
         mock_open,
-        mock_dump
+        mock_json_dump
     ):
         """Assert reload does nothing if no file to load from"""
 
@@ -162,8 +171,53 @@ class TestReload(TestFileStorage):
 
         self.assertEqual(pre_call, post_call)
         mock_path.assert_called_once()
-        mock_dump.assert_not_called()
         mock_open.assert_not_called()
+        mock_json_dump.assert_not_called()
+
+    @patch("json.load")
+    @patch("builtins.open")
+    @patch("pathlib.Path.is_file", return_value=True)
+    def test_reload_when_empty_file_exits(
+        self,
+        mock_path,
+        mock_open,
+        mock_json_load
+    ):
+        """Assert object tracking reset to empty if empty file exists"""
+
+        mock_json_load.return_value = {}
+
+        pre_call = self.storage.all()
+        self.storage.reload()
+        post_call = self.storage.all()
+
+        self.assertNotEqual(pre_call, post_call)
+        self.assertEqual(post_call, {})
+        mock_path.assert_called_once()
+        mock_open.assert_called_once()
+        mock_json_load.assert_called_once()
+
+    @patch("json.load")
+    @patch("builtins.open")
+    @patch("pathlib.Path.is_file", return_value=True)
+    def test_reload_when_file_exits(
+        self,
+        mock_path,
+        mock_open,
+        mock_json_load
+    ):
+        """Assert reload alters tracked objects when file present"""
+
+        mock_json_load.return_value = self.mock_json_load_side_effect
+
+        pre_call = self.storage.all()
+        self.storage.reload()
+        post_call = self.storage.all()
+
+        self.assertNotEqual(pre_call, post_call)
+        mock_path.assert_called_once()
+        mock_open.assert_called_once()
+        mock_json_load.assert_called_once()
 
 
 if __name__ == "__main__":

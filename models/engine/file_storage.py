@@ -47,8 +47,15 @@ class FileStorage:
         self.__objects[key] = obj.to_dict()
 
     def reload(self):
+        """Reset tracked objects to contents of `file path"""
+
         if not Path(self.__file_path).is_file():
             return
+        elif not Path(self.__file_path).stat().st_size:
+            self.__objects = {}
+        else:
+            with open(self.__file_path, "r") as file:
+                self.__objects = json.load(file)
 
     def save(self):
         """Serialises tracked objects"""
