@@ -120,5 +120,51 @@ class TestSave(TestFileStorage):
         mock_open.assert_called_once()
 
 
+class TestReload(TestFileStorage):
+
+    """Assert deserialisation to json file"""
+
+    @patch("json.dump")
+    @patch("builtins.open")
+    @patch("pathlib.Path.is_file", return_value=False)
+    def test_reload_with_no_file_to_load_does_not_raise_an_exception(
+        self,
+        mock_path,
+        mock_open,
+        mock_dump
+    ):
+        """Assert reload does nothing if no file to load from"""
+
+        try:
+            self.storage.reload()
+        except Exception as exception:
+            name = exception.__class__.__name__
+            self.fail("method `reload` unexpectedly raised `{name}`")
+
+        mock_path.assert_called_once()
+        mock_dump.assert_not_called()
+        mock_open.assert_not_called()
+
+    @patch("json.dump")
+    @patch("builtins.open")
+    @patch("pathlib.Path.is_file", return_value=False)
+    def test_reload_where_no_file_tracked_objects_is_unchanged(
+        self,
+        mock_path,
+        mock_open,
+        mock_dump
+    ):
+        """Assert reload does nothing if no file to load from"""
+
+        pre_call = self.storage.all()
+        self.storage.reload()
+        post_call = self.storage.all()
+
+        self.assertEqual(pre_call, post_call)
+        mock_path.assert_called_once()
+        mock_dump.assert_not_called()
+        mock_open.assert_not_called()
+
+
 if __name__ == "__main__":
     main()

@@ -7,6 +7,7 @@ attributes and methods for storing BaseModel instances to the file system
 
 
 from datetime import datetime
+from pathlib import Path
 import json
 import uuid
 
@@ -44,6 +45,10 @@ class FileStorage:
 
         key = self.__extract_key(obj)
         self.__objects[key] = obj.to_dict()
+
+    def reload(self):
+        if not Path(self.__file_path).is_file():
+            return
 
     def save(self):
         """Serialises tracked objects"""
