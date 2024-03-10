@@ -341,8 +341,8 @@ class HBNBCommand(cmd.Cmd):
             attr = parsed.get("attribute")
             kwargs[attr] = parsed.get("value")
 
-        model = MODELS.get(parsed["model_name"])
-        return model(**kwargs)
+        Model = MODELS.get(parsed["model_name"])
+        return Model(**kwargs)
 
     def __parse_line(self, line):
         """
