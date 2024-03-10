@@ -6,7 +6,10 @@ attributes and methods for the User class
 """
 
 
-class User:
+from models import BaseModel
+
+
+class User(BaseModel):
 
     """
     The definition, documentation and encapsulation of all common

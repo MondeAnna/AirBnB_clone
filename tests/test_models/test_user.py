@@ -12,6 +12,7 @@ from unittest import TestCase
 from unittest import main
 
 
+from models import BaseModel
 from models import User
 
 
@@ -29,6 +30,9 @@ class TestUser(TestCase):
         self.assertEqual(self.user.last_name, "")
         self.assertEqual(self.user.email, "")
         self.assertEqual(self.user.password, "")
+
+    def test_inheritance(self):
+        self.assertTrue(issubclass(User, BaseModel))
 
 
 if __name__ == "__main__":
