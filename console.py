@@ -8,8 +8,7 @@ from collections import OrderedDict
 import cmd
 
 
-from models import storage
-from models import MODELS
+from models import *
 
 
 class HBNBCommand(cmd.Cmd):
@@ -20,10 +19,26 @@ class HBNBCommand(cmd.Cmd):
 
     prompt = "(hbnb) "
 
-    def emptyline(self):
-        """Skips to new prompt should input be empty"""
+    def default(self, line):
+        """
+        Attempt at executing cli input when provided command
+        does not match the provided definitions, where code
+        is executed as though it is Python code
 
-        pass
+        Parameter
+        ---------
+        line : str
+            user input
+
+        Example
+        -------
+            (hbnb) User.all()
+        """
+
+        try:
+            exec(line)
+        except Exception:
+            print(f"*** unkown syntax: {line}")
 
     def do_all(self, model_name):
         """
@@ -61,10 +76,12 @@ class HBNBCommand(cmd.Cmd):
             ]
 
         for kwargs in list_of_kwargs:
+            kwargs_copy = kwargs.copy()
+            kwargs_copy.pop("__class__")
+
             model = MODELS.get(kwargs.get("__class__"))
-            kwargs_new = kwargs.copy()
-            kwargs_new.pop("__class__")
-            instance = model(**kwargs_new)
+            instance = model(**kwargs_copy)
+
             print(instance)
 
     def do_create(self, model_name):
@@ -279,6 +296,11 @@ class HBNBCommand(cmd.Cmd):
         storage.new(model)
         storage.save()
 
+    def emptyline(self):
+        """Skips to new prompt should input be empty"""
+
+        pass
+
     def __is_valid_model_name(self, model_name):
         """Validates class name as being existant"""
 
@@ -332,7 +354,6 @@ class HBNBCommand(cmd.Cmd):
             kwargs[attr] = parsed.get("value")
 
         model = MODELS.get(parsed["model_name"])
-
         return model(**kwargs)
 
     def __parse_line(self, line):

@@ -41,6 +41,26 @@ class BaseModel:
         else:
             self.__init_kwargs(kwargs)
 
+    @classmethod
+    def all(cls):
+        """Display all class specific instances in storage"""
+
+        list_of_kwargs = [
+            instance
+            for instance in models.storage.all().values()
+            if instance.get("__class__") == cls.__name__
+        ]
+
+        for kwargs in list_of_kwargs:
+
+            kwargs_copy = kwargs.copy()
+            kwargs_copy.pop("__class__")
+
+            model = models.MODELS.get(kwargs.get("__class__"))
+            instance = model(**kwargs_copy)
+
+            print(instance)
+
     def save(self):
         """Update the `updated_at` attribute"""
 
