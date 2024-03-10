@@ -70,84 +70,11 @@ class BaseModel:
         len_ = len(list_of_kwargs)
         print(len_)
 
-    @staticmethod
-    def is_valid_instance_id(instance_id):
-        """
-        Validates instance id as being existant
-
-        Parameter
-        ---------
-        instance_id : str
-            uuid of class instance
-
-        Return
-        ------
-        bool
-            True if uuid matches one of the stored
-            instances else False
-        """
-
-        keys = storage.all().keys()
-
-        elements = [
-            element
-            for key in keys
-            for element in key.split(".")
-        ]
-
-        if not instance_id:
-            print("** instance id missing **")
-            return False
-
-        if instance_id not in elements:
-            print("** no instance found **")
-            return False
-
-        return True
-
-    @staticmethod
-    def is_valid_model_name(model_name):
-        """
-        Validates class name as being existant
-
-        Parameter
-        ---------
-        model_name : str
-            the name of the model (class) being
-            validated
-
-        Return
-        ------
-        bool
-            True if model name is present in
-            the system else False
-        """
-
-        if not model_name:
-            print("** class name missing **")
-            return False
-
-        if model_name not in models.MODELS:
-            print("** class doesn't exist **")
-            return False
-
-        return True
-
     def save(self):
         """Update the `updated_at` attribute"""
 
         self.updated_at = datetime.now()
         models.storage.save()
-
-    @classmethod
-    def show(cls, instance_id):
-        key = f"{cls.__name__}.{instance_id}"
-        kwargs = models.storage.all().get(key)
-
-        Model = models.MODELS.get(cls.__name__)
-        model = Model(**kwargs)
-
-        print(model)
 
     def to_dict(self):
         """Serialises BaseModel's attributes into a `dict`"""
@@ -204,8 +131,6 @@ class BaseModel:
                 value = datetime.strptime(value, format)
 
             self.__dict__[attr] = value
-
-        models.storage.new(self)
 
     def __setattr__(self, name, value):
         """
