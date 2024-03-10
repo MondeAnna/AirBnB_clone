@@ -8,10 +8,8 @@ from collections import OrderedDict
 import cmd
 
 
-from models import BaseModel
 from models import storage
 from models import MODELS
-from models import User
 
 
 class HBNBCommand(cmd.Cmd):
@@ -107,11 +105,6 @@ class HBNBCommand(cmd.Cmd):
         """Exits the programme when user enters `ctrl+d`"""
 
         print()
-        return True
-
-    def do_exit(self, line):
-        """Exit command to quit the program"""
-
         return True
 
     def do_destroy(self, line):
