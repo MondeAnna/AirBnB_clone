@@ -205,6 +205,8 @@ class BaseModel:
 
             self.__dict__[attr] = value
 
+        models.storage.new(self)
+
     def __setattr__(self, name, value):
         """
         Customised process when creating or updating an
