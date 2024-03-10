@@ -26,12 +26,16 @@ class TestUser(TestCase):
         self.user = User()
 
     def test_initialisation_has_empty_attr(self):
+        """Assert class specific attributes instations as empty str"""
+
         self.assertEqual(self.user.first_name, "")
         self.assertEqual(self.user.last_name, "")
         self.assertEqual(self.user.email, "")
         self.assertEqual(self.user.password, "")
 
     def test_inheritance(self):
+        """Assert is subclass of BaseModel"""
+
         self.assertTrue(issubclass(User, BaseModel))
 
 
