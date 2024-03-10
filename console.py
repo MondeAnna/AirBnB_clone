@@ -105,6 +105,7 @@ class HBNBCommand(cmd.Cmd):
         Model = MODELS.get(model_name)
         model = Model()
         model.save()
+
         print(model.id)
 
     def do_EOF(self, line):
@@ -282,8 +283,6 @@ class HBNBCommand(cmd.Cmd):
 
         model = self.__make_model(parsed)
         model.save()
-        storage.new(model)
-        storage.save()
 
     def emptyline(self):
         """Skips to new prompt should input be empty"""
