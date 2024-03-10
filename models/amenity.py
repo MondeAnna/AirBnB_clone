@@ -1,19 +1,19 @@
 #!/usr/bin/python3
 
 """
-Amnesty Module: The definition, documentation and encapsulation of all common
-attributes and methods for the Amnesty class
+Amenity Module: The definition, documentation and encapsulation of all common
+attributes and methods for the Amenity class
 """
 
 
 from models import BaseModel
 
 
-class Amnesty(BaseModel):
+class Amenity(BaseModel):
 
     """
     The definition, documentation and encapsulation of all common
-    attributes and methods for the Amnesty class
+    attributes and methods for the Amenity class
     """
 
     def __init__(self, *args, **kwargs):
