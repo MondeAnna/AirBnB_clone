@@ -8,6 +8,7 @@ attributes and methods for the project's classes
 
 from importlib import import_module
 from datetime import datetime
+import datetime as dt
 import uuid
 
 
@@ -50,8 +51,8 @@ class BaseModel:
         """Serialises BaseModel's attributes into a `dict`"""
 
         dict_ = {
-            key.replace("_BaseModel__", ""): value.isoformat()
-            if not isinstance(value, str) else value
+            key: value.isoformat()
+            if isinstance(value, dt.datetime) else value
             for key, value in sorted(self.__dict__.items())
         }
 
@@ -81,6 +82,7 @@ class BaseModel:
         dt_attr = ["created_at", "updated_at"]
 
         for attr, value in kwargs.items():
+
             if attr in dt_attr:
                 format = "%Y-%m-%dT%H:%M:%S.%f"
                 value = datetime.strptime(value, format)

@@ -4,6 +4,7 @@
 Command Line Interface for the product
 """
 
+from collections import OrderedDict
 import cmd
 
 
@@ -17,7 +18,7 @@ class HBNBCommand(cmd.Cmd):
     Product's Command Line Interface
     """
 
-    __valid_models = ["BaseModel"]
+    __MODELS = {"BaseModel": BaseModel}
     prompt = "(hbnb) "
 
     def emptyline(self):
@@ -48,22 +49,24 @@ class HBNBCommand(cmd.Cmd):
             ** class doesn't exist **
         """
 
-        if class_name and class_name not in self.__valid_models:
-            print("** class doesn't exist **")
-            return
+        if class_name and class_name not in self.__MODELS:
+            return print("** class doesn't exist **")
 
         if not class_name:
-            kwargs_list = list(storage.all().values())
+            list_of_kwargs = list(storage.all().values())
         else:
-            kwargs_list = [
+            list_of_kwargs = [
                 instance
                 for instance in storage.all().values()
                 if instance.get("__class__") == class_name
             ]
 
-        for kwargs in kwargs_list:
-            model = self.__make_model(kwargs)
-            print(model)
+        for kwargs in list_of_kwargs:
+            model = self.__MODELS.get(kwargs.get("__class__"))
+            kwargs_new = kwargs.copy()
+            kwargs_new.pop("__class__")
+            instance = model(**kwargs_new)
+            print(instance)
 
     def do_create(self, class_name):
         """
@@ -141,17 +144,22 @@ class HBNBCommand(cmd.Cmd):
             ** no instance found **
         """
 
-        class_name, instance_id = self.__split_line(line)
+        parsed = self.__parse_line(line)
 
-        if not self.__is_valid_class_name(class_name):
+        if not self.__is_valid_class_name(parsed["class_name"]):
             return
 
-        if not self.__is_valid_instance_id(instance_id):
+        if not self.__is_valid_instance_id(parsed["instance_id"]):
             return
 
-        key = f"{class_name}.{instance_id}"
+        key = f"{parsed.get('class_name')}.{parsed.get('instance_id')}"
         storage.all().pop(key)
         storage.save()
+
+    def do_quit(self, line):
+        """Quit command to exit the program"""
+
+        return True
 
     def do_show(self, line):
         """
@@ -196,23 +204,85 @@ class HBNBCommand(cmd.Cmd):
             ** no instance found **
         """
 
-        class_name, instance_id = self.__split_line(line)
+        parsed = self.__parse_line(line)
 
-        if not self.__is_valid_class_name(class_name):
+        if not self.__is_valid_class_name(parsed["class_name"]):
             return
 
-        if not self.__is_valid_instance_id(instance_id):
+        if not self.__is_valid_instance_id(parsed["instance_id"]):
             return
 
-        key = f"{class_name}.{instance_id}"
-        kwargs = storage.all().get(key)
-        model = self.__make_model(kwargs)
+        model = self.__make_model(parsed)
         print(model)
 
-    def do_quit(self, line):
-        """Quit command to exit the program"""
+    def do_update(self, line):
+        """
+        Updates an instance based on the class name and id
+        by adding or updating attribute, which is then sent
+        to storage. One attribute can be updated at a time,
+        whereby the attribute value is cast into one of
+        three type, float, int or str.
 
-        return True
+        Of note is that `id`, `created_at` and `updated_at`
+        cannot be updated.
+
+        Usage
+        -----
+            update <class name> <id> <attribute name> "<attribute value>"
+
+        Expected
+        --------
+            (hbnb) update BaseModel 1234-1234-1234 email "aibnb@mail.com"
+
+        Missing class name
+        ------------------
+            (hbnb) update
+            ** class name missing **
+
+        Non-Existant Class
+        ------------------
+            (hbnb) update DoesNotExist
+            ** class doesn't exist **
+
+        Missing Instance ID
+        ----------
+            (hbnb) update BaseModel
+            ** instance id missing **
+
+        Non-Existant Instance ID
+        ----------
+            (hbnb) update BaseModel 123-456-789
+            ** no instance found **
+
+        Missing Attribute Name
+        ----------
+            (hbnb) update BaseModel 123-456-789
+            ** attribute name missing **
+
+        Non-Existant Attribute Value
+        ----------
+            (hbnb) update BaseModel 123-456-789 first_name
+            ** value missing **
+        """
+
+        parsed = self.__parse_line(line)
+
+        if not self.__is_valid_class_name(parsed["class_name"]):
+            return
+
+        if not self.__is_valid_instance_id(parsed["instance_id"]):
+            return
+
+        if not parsed["attribute"]:
+            return print("** attribute name missing **")
+
+        if not parsed["value"]:
+            return print("** value missing **")
+
+        model = self.__make_model(parsed)
+        model.save()
+        storage.new(model)
+        storage.save()
 
     def __is_valid_class_name(self, class_name):
         """Validates class name as being existant"""
@@ -221,7 +291,7 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
             return False
 
-        if class_name not in self.__valid_models:
+        if class_name not in self.__MODELS:
             print("** class doesn't exist **")
             return False
 
@@ -243,16 +313,34 @@ class HBNBCommand(cmd.Cmd):
 
         return True
 
-    @staticmethod
-    def __make_model(kwargs):
-        return BaseModel({
-            key: value
-            for key, value in kwargs.items()
-            if not key.count("__class__")
-        })
+    def __make_model(self, parsed):
+        """
+        Instantiate an object based on provided kwargs
 
-    @staticmethod
-    def __split_line(line):
+        Parameter
+        ---------
+        parsed : dict
+            parsed user input
+
+        Return
+        ------
+        object
+            instance of available classes as per the
+            kwargs
+        """
+
+        key = f"{parsed.get('class_name')}.{parsed.get('instance_id')}"
+        kwargs = storage.all().get(key)
+
+        if parsed.get("attribute"):
+            attr = parsed.get("attribute")
+            kwargs[attr] = parsed.get("value")
+
+        model = self.__MODELS.get(parsed["class_name"])
+
+        return model(**kwargs)
+
+    def __parse_line(self, line):
         """
         Separate line into class name and instance id
 
@@ -269,12 +357,44 @@ class HBNBCommand(cmd.Cmd):
             the instance id
         """
 
-        if line.count(" "):
-            class_name, instance_id, *_ = line.split()
-        else:
-            class_name = line
-            instance_id = ""
-        return class_name, instance_id
+        parsed = OrderedDict({
+            "class_name": None,
+            "instance_id": None,
+            "attribute": None,
+            "value": None,
+        })
+
+        split = line.split()
+
+        for key, value in zip(parsed, split):
+            parsed[key] = value
+
+        parsed["value"] = self.__type_value(parsed["value"])
+
+        return parsed
+
+    @staticmethod
+    def __type_value(value):
+        """
+        Set the type of the value, at present limited to
+        `float`, `int` and `str`
+
+        Parameter
+        ---------
+        value : str
+            user provided input
+
+        Return
+        ------
+        float | int | str
+            typed input from user
+        """
+
+        for instance in [float, int, str]:
+            if isinstance(value, instance):
+                return instance(value)
+
+        return value
 
 
 if __name__ == "__main__":
