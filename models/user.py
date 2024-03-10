@@ -16,4 +16,8 @@ class User(BaseModel):
     attributes and methods for the User class
     """
 
-    first_name = last_name = email = password = ""
+    def __init__(self):
+        self.first_name = ""
+        self.last_name = ""
+        self.email = ""
+        self.password = ""
