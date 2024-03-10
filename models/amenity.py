@@ -17,5 +17,7 @@ class Amenity(BaseModel):
     """
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        """instantiate public class attributes as empty str"""
+
         self.name = ""
+        super().__init__(*args, **kwargs)

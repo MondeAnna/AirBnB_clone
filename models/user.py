@@ -19,8 +19,9 @@ class User(BaseModel):
     def __init__(self, *args, **kwargs):
         """instantiate public class attributes as empty str"""
 
-        super().__init__(*args, **kwargs)
         self.first_name = ""
         self.last_name = ""
         self.email = ""
         self.password = ""
+
+        super().__init__(*args, **kwargs)

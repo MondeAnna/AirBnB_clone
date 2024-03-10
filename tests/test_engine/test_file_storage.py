@@ -36,8 +36,12 @@ class TestFileStorage(TestCase):
         }
 
         self.mock_model_01.to_dict.return_value = {
-            "__class__": "BaseModel",
+            "__class__": "User",
             "id": "mock_model_01",
+            "password": "",
+            "last_name": "",
+            "first_name": "",
+            "email": "",
         }
 
     def tearDown(self):
@@ -89,9 +93,11 @@ class TestNew(TestFileStorage):
         num_objects = len(objects)
 
         self.assertTrue("BaseModel.mock_model_00" in objects.keys())
-        self.assertTrue("BaseModel.mock_model_01" in objects.keys())
+        self.assertTrue("User.mock_model_01" in objects.keys())
+
         self.assertTrue(self.mock_model_00.to_dict() in objects.values())
         self.assertTrue(self.mock_model_01.to_dict() in objects.values())
+
         self.assertEqual(num_objects, 2)
 
 

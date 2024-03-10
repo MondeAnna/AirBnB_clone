@@ -17,6 +17,8 @@ class City(BaseModel):
     """
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        """instantiate public class attributes as empty str"""
+
         self.name = ""
         self.state_id = ""
+        super().__init__(*args, **kwargs)
