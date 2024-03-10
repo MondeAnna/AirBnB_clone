@@ -9,6 +9,7 @@ import cmd
 
 
 from models import BaseModel
+from models import User
 from models import storage
 
 
@@ -18,7 +19,10 @@ class HBNBCommand(cmd.Cmd):
     Product's Command Line Interface
     """
 
-    __MODELS = {"BaseModel": BaseModel}
+    __MODELS = {
+        "BaseModel": BaseModel,
+        "User": User,
+    }
     prompt = "(hbnb) "
 
     def emptyline(self):
@@ -26,7 +30,7 @@ class HBNBCommand(cmd.Cmd):
 
         pass
 
-    def do_all(self, class_name):
+    def do_all(self, model_name):
         """
         Prints a list of string representations of all instances.
         Where class name is provided, instances are scoped to said
@@ -35,7 +39,7 @@ class HBNBCommand(cmd.Cmd):
 
         Parameter
         ---------
-        class_name : str
+        model_name : str
             name of class to be represented
 
         Expected
@@ -49,16 +53,16 @@ class HBNBCommand(cmd.Cmd):
             ** class doesn't exist **
         """
 
-        if class_name and class_name not in self.__MODELS:
+        if model_name and model_name not in self.__MODELS:
             return print("** class doesn't exist **")
 
-        if not class_name:
+        if not model_name:
             list_of_kwargs = list(storage.all().values())
         else:
             list_of_kwargs = [
                 instance
                 for instance in storage.all().values()
-                if instance.get("__class__") == class_name
+                if instance.get("__class__") == model_name
             ]
 
         for kwargs in list_of_kwargs:
@@ -68,7 +72,7 @@ class HBNBCommand(cmd.Cmd):
             instance = model(**kwargs_new)
             print(instance)
 
-    def do_create(self, class_name):
+    def do_create(self, model_name):
         """
         Creates a new instance, saves it and prints the id. If
         the class name is missing or does not exist, the user
@@ -76,7 +80,7 @@ class HBNBCommand(cmd.Cmd):
 
         Parameter
         ---------
-        class_name : str
+        model_name : str
             name of class to create
 
         Expected
@@ -94,10 +98,11 @@ class HBNBCommand(cmd.Cmd):
             ** class doesn't exist **
         """
 
-        if not self.__is_valid_class_name(class_name):
+        if not self.__is_valid_model_name(model_name):
             return
 
-        model = BaseModel()
+        Model = self.__MODELS.get(model_name)
+        model = Model()
         model.save()
         print(model.id)
 
@@ -146,13 +151,13 @@ class HBNBCommand(cmd.Cmd):
 
         parsed = self.__parse_line(line)
 
-        if not self.__is_valid_class_name(parsed["class_name"]):
+        if not self.__is_valid_model_name(parsed["model_name"]):
             return
 
         if not self.__is_valid_instance_id(parsed["instance_id"]):
             return
 
-        key = f"{parsed.get('class_name')}.{parsed.get('instance_id')}"
+        key = f"{parsed.get('model_name')}.{parsed.get('instance_id')}"
         storage.all().pop(key)
         storage.save()
 
@@ -173,7 +178,7 @@ class HBNBCommand(cmd.Cmd):
             user input expected to be two part expression
             containing
 
-            class_name : str
+            model_name : str
                 name of class to create
 
             instance_id : str
@@ -206,7 +211,7 @@ class HBNBCommand(cmd.Cmd):
 
         parsed = self.__parse_line(line)
 
-        if not self.__is_valid_class_name(parsed["class_name"]):
+        if not self.__is_valid_model_name(parsed["model_name"]):
             return
 
         if not self.__is_valid_instance_id(parsed["instance_id"]):
@@ -267,7 +272,7 @@ class HBNBCommand(cmd.Cmd):
 
         parsed = self.__parse_line(line)
 
-        if not self.__is_valid_class_name(parsed["class_name"]):
+        if not self.__is_valid_model_name(parsed["model_name"]):
             return
 
         if not self.__is_valid_instance_id(parsed["instance_id"]):
@@ -284,14 +289,14 @@ class HBNBCommand(cmd.Cmd):
         storage.new(model)
         storage.save()
 
-    def __is_valid_class_name(self, class_name):
+    def __is_valid_model_name(self, model_name):
         """Validates class name as being existant"""
 
-        if not class_name:
+        if not model_name:
             print("** class name missing **")
             return False
 
-        if class_name not in self.__MODELS:
+        if model_name not in self.__MODELS:
             print("** class doesn't exist **")
             return False
 
@@ -329,14 +334,14 @@ class HBNBCommand(cmd.Cmd):
             kwargs
         """
 
-        key = f"{parsed.get('class_name')}.{parsed.get('instance_id')}"
+        key = f"{parsed.get('model_name')}.{parsed.get('instance_id')}"
         kwargs = storage.all().get(key)
 
         if parsed.get("attribute"):
             attr = parsed.get("attribute")
             kwargs[attr] = parsed.get("value")
 
-        model = self.__MODELS.get(parsed["class_name"])
+        model = self.__MODELS.get(parsed["model_name"])
 
         return model(**kwargs)
 
@@ -358,7 +363,7 @@ class HBNBCommand(cmd.Cmd):
         """
 
         parsed = OrderedDict({
-            "class_name": None,
+            "model_name": None,
             "instance_id": None,
             "attribute": None,
             "value": None,
