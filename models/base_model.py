@@ -66,6 +66,19 @@ class BaseModel:
 
             print(instance)
 
+    @classmethod
+    def count(cls):
+        """Display number of all class specific instances in storage"""
+
+        list_of_kwargs = [
+            instance
+            for instance in models.storage.all().values()
+            if instance.get("__class__") == cls.__name__
+        ]
+
+        len_ = len(list_of_kwargs)
+        print(len_)
+
     def save(self):
         """Update the `updated_at` attribute"""
 
