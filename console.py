@@ -99,7 +99,7 @@ class HBNBCommand(cmd.Cmd):
             ** class doesn't exist **
         """
 
-        if not self.__is_valid_model_name(model_name):
+        if not BaseModel.is_valid_model_name(model_name):
             return
 
         Model = MODELS.get(model_name)
@@ -148,10 +148,10 @@ class HBNBCommand(cmd.Cmd):
 
         parsed = self.__parse_line(line)
 
-        if not self.__is_valid_model_name(parsed["model_name"]):
+        if not BaseModel.is_valid_model_name(parsed["model_name"]):
             return
 
-        if not self.__is_valid_instance_id(parsed["instance_id"]):
+        if not BaseModel.is_valid_instance_id(parsed["instance_id"]):
             return
 
         key = f"{parsed.get('model_name')}.{parsed.get('instance_id')}"
@@ -208,14 +208,14 @@ class HBNBCommand(cmd.Cmd):
 
         parsed = self.__parse_line(line)
 
-        if not self.__is_valid_model_name(parsed["model_name"]):
+        if not BaseModel.is_valid_model_name(parsed["model_name"]):
             return
 
-        if not self.__is_valid_instance_id(parsed["instance_id"]):
+        if not BaseModel.is_valid_instance_id(parsed["instance_id"]):
             return
 
-        model = self.__make_model(parsed)
-        print(model)
+        cls = MODELS.get(parsed["model_name"])
+        cls.show(parsed.get("instance_id"))
 
     def do_update(self, line):
         """
@@ -269,10 +269,10 @@ class HBNBCommand(cmd.Cmd):
 
         parsed = self.__parse_line(line)
 
-        if not self.__is_valid_model_name(parsed["model_name"]):
+        if not BaseModel.is_valid_model_name(parsed["model_name"]):
             return
 
-        if not self.__is_valid_instance_id(parsed["instance_id"]):
+        if not BaseModel.is_valid_instance_id(parsed["instance_id"]):
             return
 
         if not parsed["attribute"]:
@@ -288,35 +288,6 @@ class HBNBCommand(cmd.Cmd):
         """Skips to new prompt should input be empty"""
 
         pass
-
-    def __is_valid_model_name(self, model_name):
-        """Validates class name as being existant"""
-
-        if not model_name:
-            print("** class name missing **")
-            return False
-
-        if model_name not in MODELS:
-            print("** class doesn't exist **")
-            return False
-
-        return True
-
-    def __is_valid_instance_id(self, instance_id):
-        """Validates instance id as being existant"""
-
-        keys = storage.all().keys()
-        elements = [element for key in keys for element in key.split(".")]
-
-        if not instance_id:
-            print("** instance id missing **")
-            return False
-
-        if instance_id not in elements:
-            print("** no instance found **")
-            return False
-
-        return True
 
     def __make_model(self, parsed):
         """
