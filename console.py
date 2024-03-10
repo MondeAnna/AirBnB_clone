@@ -395,11 +395,16 @@ class HBNBCommand(cmd.Cmd):
             typed input from user
         """
 
-        for instance in [float, int, str]:
-            if isinstance(value, instance):
-                return instance(value)
+        if not value:
+            return value
 
-        return value
+        if not value.isdigit() and not value.count("."):
+            return value
+
+        if value.isdigit():
+            return int(value)
+
+        return float(value)
 
 
 if __name__ == "__main__":
