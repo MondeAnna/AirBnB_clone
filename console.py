@@ -67,22 +67,11 @@ class HBNBCommand(cmd.Cmd):
             return print("** class doesn't exist **")
 
         if not model_name:
-            list_of_kwargs = list(storage.all().values())
+            for cls in MODELS.values():
+                cls.all()
         else:
-            list_of_kwargs = [
-                instance
-                for instance in storage.all().values()
-                if instance.get("__class__") == model_name
-            ]
-
-        for kwargs in list_of_kwargs:
-            kwargs_copy = kwargs.copy()
-            kwargs_copy.pop("__class__")
-
-            model = MODELS.get(kwargs.get("__class__"))
-            instance = model(**kwargs_copy)
-
-            print(instance)
+            cls = MODELS.get(model_name)
+            cls.all()
 
     def do_create(self, model_name):
         """

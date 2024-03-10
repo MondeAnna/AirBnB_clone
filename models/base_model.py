@@ -43,7 +43,12 @@ class BaseModel:
 
     @classmethod
     def all(cls):
-        """Display all class specific instances in storage"""
+        """
+        Prints a list of string representations of all instances.
+        Where class name is provided, instances are scoped to said
+        class. Where no class name is provided, all instance
+        representations are printed.
+        """
 
         list_of_kwargs = [
             instance
