@@ -9,8 +9,9 @@ import cmd
 
 
 from models import BaseModel
-from models import User
 from models import storage
+from models import MODELS
+from models import User
 
 
 class HBNBCommand(cmd.Cmd):
@@ -19,10 +20,6 @@ class HBNBCommand(cmd.Cmd):
     Product's Command Line Interface
     """
 
-    __MODELS = {
-        "BaseModel": BaseModel,
-        "User": User,
-    }
     prompt = "(hbnb) "
 
     def emptyline(self):
@@ -53,7 +50,7 @@ class HBNBCommand(cmd.Cmd):
             ** class doesn't exist **
         """
 
-        if model_name and model_name not in self.__MODELS:
+        if model_name and model_name not in MODELS:
             return print("** class doesn't exist **")
 
         if not model_name:
@@ -66,7 +63,7 @@ class HBNBCommand(cmd.Cmd):
             ]
 
         for kwargs in list_of_kwargs:
-            model = self.__MODELS.get(kwargs.get("__class__"))
+            model = MODELS.get(kwargs.get("__class__"))
             kwargs_new = kwargs.copy()
             kwargs_new.pop("__class__")
             instance = model(**kwargs_new)
@@ -101,7 +98,7 @@ class HBNBCommand(cmd.Cmd):
         if not self.__is_valid_model_name(model_name):
             return
 
-        Model = self.__MODELS.get(model_name)
+        Model = MODELS.get(model_name)
         model = Model()
         model.save()
         print(model.id)
@@ -296,7 +293,7 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
             return False
 
-        if model_name not in self.__MODELS:
+        if model_name not in MODELS:
             print("** class doesn't exist **")
             return False
 
@@ -341,7 +338,7 @@ class HBNBCommand(cmd.Cmd):
             attr = parsed.get("attribute")
             kwargs[attr] = parsed.get("value")
 
-        model = self.__MODELS.get(parsed["model_name"])
+        model = MODELS.get(parsed["model_name"])
 
         return model(**kwargs)
 
