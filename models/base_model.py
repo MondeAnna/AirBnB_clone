@@ -50,11 +50,7 @@ class BaseModel:
         representations are printed.
         """
 
-        list_of_kwargs = [
-            instance
-            for instance in models.storage.all().values()
-            if instance.get("__class__") == cls.__name__
-        ]
+        list_of_kwargs = cls.__get_list_of_instance_kwargs()
 
         for kwargs in list_of_kwargs:
 
@@ -70,12 +66,7 @@ class BaseModel:
     def count(cls):
         """Display number of all class specific instances in storage"""
 
-        list_of_kwargs = [
-            instance
-            for instance in models.storage.all().values()
-            if instance.get("__class__") == cls.__name__
-        ]
-
+        list_of_kwargs = cls.__get_list_of_instance_kwargs()
         len_ = len(list_of_kwargs)
         print(len_)
 
@@ -98,6 +89,20 @@ class BaseModel:
             "__class__": self.__class__.__name__,
             **dict_,
         }
+
+    @classmethod
+    def __get_list_of_instance_kwargs(cls):
+        """
+        Provides list of kwargs needed to spawn each stored
+        instance as determined by parent/child making the
+        call
+        """
+
+        return [
+            instance
+            for instance in models.storage.all().values()
+            if instance.get("__class__") == cls.__name__
+        ]
 
     def __init_default(self):
         """Generates a new BaseModel object"""
