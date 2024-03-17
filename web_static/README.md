@@ -76,5 +76,6 @@ A website capable of the following functionality:
 
 * _[`Header - Body - Footer Layout`](0-index.html)_
 * _[`Head: Styled Layout`](1-index.html)_
+* _[`Migrate Layout to CSS`](2-index.html)_
 
 <br />
