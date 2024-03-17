@@ -71,3 +71,9 @@ A website capable of the following functionality:
     *  Javascript
 
 <br />
+
+#### Static Pages
+
+* _[`Header - Body - Footer Layout`](0-index.html)_
+
+<br />
