@@ -78,5 +78,6 @@ A website capable of the following functionality:
 * _[`Head: Styled Layout`](1-index.html)_
 * _[`Migrate Layout to CSS`](2-index.html)_
 * _[`Add Images`](3-index.html)_
+* _[`Add Search Box`](4-index.html)_
 
 <br />
